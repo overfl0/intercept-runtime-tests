@@ -1,0 +1,1 @@
+//"MyServerCommandPassword" serverCommand "#shutdown";
