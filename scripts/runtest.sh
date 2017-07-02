@@ -11,7 +11,7 @@ fi
 
 scriptdir=`dirname "$0"`
 arma_binary="$1"
-use_xvfb=true
+use_xvfb=true  # use virtual framebuffer for truly headless tests
 
 function create_args()
 {
@@ -58,4 +58,35 @@ function find_rpt()
     find ~/.wine -name '*.rpt'
 }
 
-run_server
+function check_test_results()
+{
+    rpt_file="`find_rpt`"
+    echo "====================================================================="
+    echo "Dumping the rpt file:"
+    echo "====================================================================="
+    cat "${rpt_file}"
+
+    echo "====================================================================="
+    echo "Checking the tests results..."
+    echo "====================================================================="
+    echo ""
+
+    echo -n "Checking if the server has shut down properly... "
+    # Check if the file has shut down properly
+    grep "Mission file: shutdown" "${rpt_file}" >/dev/null || (echo 'Error!' && exit 1)
+    echo 'OK!'
+
+    # TODO: Add more checks here in the form of:
+    # echo -n "Message... "
+    # grep "Something" "${rpt_file}" >/dev/null || (echo 'Error!' && exit 1)
+    # echo 'OK!'
+}
+
+function run_test()
+{
+    clear_rpt
+    run_server
+    check_test_results
+}
+
+run_test
